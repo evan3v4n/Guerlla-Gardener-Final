@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3 uid="uid://drab12mk4av51"]
+
+[ext_resource type="PackedScene" uid="uid://dkoxtfu80nj8n" path="res://Scenes/player.tscn" id="1_a7yib"]
+[ext_resource type="Script" path="res://Scripts/world.gd" id="1_pogo0"]
+[ext_resource type="Texture2D" uid="uid://b7gcstvlto2tc" path="res://icon.svg" id="2_nbcgm"]
+[ext_resource type="Script" path="res://Scripts/Garden.gd" id="4_6ycwg"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sllyi"]
+texture = ExtResource("2_nbcgm")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_o2smf"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_sllyi")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0tcey"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_pogo0")
+
+[node name="Player" parent="." instance=ExtResource("1_a7yib")]
+position = Vector2(327, 82)
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_o2smf")
+format = 2
+
+[node name="EnemySpawnTimer" type="Timer" parent="."]
+wait_time = 0.75
+one_shot = true
+
+[node name="Garden" type="StaticBody2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("4_6ycwg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Garden"]
+scale = Vector2(20, 20)
+shape = SubResource("RectangleShape2D_0tcey")
+
+[connection signal="timeout" from="EnemySpawnTimer" to="." method="_on_enemy_spawn_timer_timeout"]

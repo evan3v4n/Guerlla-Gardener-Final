@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://1vsfreqshnha"]
+
+[ext_resource type="Texture2D" uid="uid://b7gcstvlto2tc" path="res://icon.svg" id="1_gyw4f"]
+[ext_resource type="Script" path="res://Scripts/Target.gd" id="1_ws81v"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mp8bi"]
+size = Vector2(100, 108)
+
+[node name="Target" type="StaticBody2D"]
+collision_layer = 6
+collision_mask = 0
+script = ExtResource("1_ws81v")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_gyw4f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_mp8bi")
+debug_color = Color(0, 0.6, 0.701961, 0.560784)
+
+[node name="FlashColorTimer" type="Timer" parent="."]
+wait_time = 0.05
+
+[connection signal="timeout" from="FlashColorTimer" to="." method="_on_flash_color_timer_timeout"]

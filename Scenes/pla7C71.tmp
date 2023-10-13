@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=3 uid="uid://dkoxtfu80nj8n"]
+
+[ext_resource type="Texture2D" uid="uid://b7gcstvlto2tc" path="res://icon.svg" id="1_7274n"]
+[ext_resource type="Texture2D" uid="uid://4gsxp8ln84ql" path="res://Sprites/Mini_Uzi.png" id="2_6kfr7"]
+
+[sub_resource type="GDScript" id="GDScript_agrt3"]
+script/source = "extends CharacterBody2D
+
+@export var speed : int
+@export var camera_smooth_speed : int = 5 #px/s
+var direction_facing
+var move_input = Vector2.ZERO
+var bullet = preload(\"res://Scenes/bullet.tscn\")
+var current_accuracy = 4
+var muzzle_speed = 1200
+
+func _ready():
+	$Camera2D.position_smoothing_speed = camera_smooth_speed
+
+func point_gun(): 
+	direction_facing = get_angle_to(get_global_mouse_position())
+	$Gun.rotation = direction_facing
+	if abs(direction_facing) > PI/2: #prevents holding upside down gun
+		$Gun/GunSprite.flip_v = true
+	else:
+		$Gun/GunSprite.flip_v = false
+		
+	print(direction_facing)
+	
+func get_movement_input():
+	move_input.x = Input.get_axis(\"ui_left\", \"ui_right\")
+	move_input.y = Input.get_axis(\"ui_up\", \"ui_down\")
+	
+func fire():
+	var new_bullet = bullet.instantiate()
+	new_bullet.position = $Gun/GunSprite.global_position
+	if randi()%2: #flip a coin
+		new_bullet.rotation = direction_facing + randf() / current_accuracy
+	else:
+		new_bullet.rotation = direction_facing - randf() / current_accuracy
+	new_bullet.speed = muzzle_speed
+	get_parent().add_child(new_bullet)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	$Camera2D.position = get_local_mouse_position() / 4
+	point_gun()
+	get_movement_input()
+	set_velocity(move_input*speed)
+	move_and_slide()
+	if Input.is_action_pressed(\"fire_primary\"):
+		fire()
+
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p38sm"]
+size = Vector2(120, 120)
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("GDScript_agrt3")
+speed = 200
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_7274n")
+
+[node name="Gun" type="Node2D" parent="."]
+
+[node name="GunSprite" type="Sprite2D" parent="Gun"]
+texture_filter = 1
+position = Vector2(64, 0)
+scale = Vector2(5, 5)
+texture = ExtResource("2_6kfr7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_p38sm")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.8, 0.8)
+position_smoothing_enabled = true

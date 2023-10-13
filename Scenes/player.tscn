@@ -1,0 +1,106 @@
+[gd_scene load_steps=11 format=3 uid="uid://dkoxtfu80nj8n"]
+
+[ext_resource type="Script" path="res://Scripts/player.gd" id="1_44ge8"]
+[ext_resource type="Texture2D" uid="uid://4gsxp8ln84ql" path="res://Sprites/Mini_Uzi.png" id="2_6kfr7"]
+[ext_resource type="Texture2D" uid="uid://cklcibaoepkxf" path="res://Sprites/Gardener.png" id="2_71brf"]
+[ext_resource type="FontFile" uid="uid://dpjmrgwufslmx" path="res://Imported Assets/PixelEmulator-xq08.ttf" id="4_056dc"]
+[ext_resource type="AudioStream" uid="uid://dcapg73h3pqj7" path="res://Audio/gun_sfx.wav" id="5_upubt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p38sm"]
+size = Vector2(58, 89)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ect3w"]
+font_size = 29
+outline_size = 5
+outline_color = Color(0, 0, 0, 0.470588)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3l53i"]
+bg_color = Color(0.254902, 0.254902, 0.254902, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhw52"]
+bg_color = Color(0.360784, 0.686275, 0.380392, 1)
+
+[sub_resource type="Theme" id="Theme_v8x08"]
+/colors/Green = Color(0, 1, 0, 1)
+ProgressBar/styles/background = SubResource("StyleBoxFlat_3l53i")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_rhw52")
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_44ge8")
+speed = 200
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(10, 10)
+texture = ExtResource("2_71brf")
+flip_h = true
+
+[node name="Gun" type="Node2D" parent="."]
+
+[node name="GunSprite" type="Sprite2D" parent="Gun"]
+texture_filter = 1
+position = Vector2(64, 0)
+scale = Vector2(5, 5)
+texture = ExtResource("2_6kfr7")
+
+[node name="Muzzle" type="Node2D" parent="Gun/GunSprite"]
+position = Vector2(6.2, -3.5)
+
+[node name="MuzzleFlipped" type="Node2D" parent="Gun/GunSprite"]
+position = Vector2(6.2, 3.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4.5)
+shape = SubResource("RectangleShape2D_p38sm")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.75, 0.75)
+position_smoothing_enabled = true
+
+[node name="AmmoCountLabel" type="Label" parent="."]
+offset_left = 32.0
+offset_top = 53.0
+offset_right = 72.0
+offset_bottom = 76.0
+theme_override_fonts/font = ExtResource("4_056dc")
+text = "20/20"
+label_settings = SubResource("LabelSettings_ect3w")
+
+[node name="PressRLabel" type="Label" parent="."]
+visible = false
+offset_left = -196.0
+offset_top = -115.0
+offset_right = 196.0
+offset_bottom = -77.0
+theme_override_fonts/font = ExtResource("4_056dc")
+text = "press 'r' to reload"
+label_settings = SubResource("LabelSettings_ect3w")
+horizontal_alignment = 1
+
+[node name="ReloadingLabel" type="Label" parent="."]
+visible = false
+offset_left = -196.0
+offset_top = -115.0
+offset_right = 196.0
+offset_bottom = -77.0
+theme_override_fonts/font = ExtResource("4_056dc")
+text = "Reloading..."
+label_settings = SubResource("LabelSettings_ect3w")
+horizontal_alignment = 1
+
+[node name="SprintProgressBar" type="ProgressBar" parent="."]
+offset_left = -73.0
+offset_top = -17.0
+offset_right = -29.0
+offset_bottom = -8.0
+rotation = -1.57079
+theme = SubResource("Theme_v8x08")
+value = 25.0
+show_percentage = false
+
+[node name="SprintTimer" type="Timer" parent="."]
+
+[node name="GunShotSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_upubt")
+
+[connection signal="timeout" from="SprintTimer" to="." method="_on_sprint_timer_timeout"]
